@@ -2,14 +2,15 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
+	"github.com/HouzuoGuo/tiedot/db"
 	"github.com/julienschmidt/httprouter"
-	"gopkg.in/mgo.v2"
 )
 
-func NewCreateTournamentHandler(db *mgo.Session) httprouter.Handle {
-	collection := db.DB("jackmarshall").C("tournament")
+func NewCreateTournamentHandler(database *db.DB) httprouter.Handle {
+	collection := database.Use("Tournaments")
 
 	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
@@ -19,8 +20,17 @@ func NewCreateTournamentHandler(db *mgo.Session) httprouter.Handle {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-
-		err = collection.Insert(&tournament)
+		fmt.Println(tournament)
+		_, err = collection.Insert(map[string]interface{}{
+			"owner":      tournament.Owner,
+			"name":       tournament.Name,
+			"format":     tournament.Format,
+			"slots":      tournament.Slots,
+			"fee_amount": tournament.FeeAmount,
+			//	"date":       tournament.Date,
+			"players": tournament.Players,
+			"tables":  tournament.Tables,
+			"rounds":  tournament.Rounds})
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

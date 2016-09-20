@@ -3,9 +3,8 @@ package main
 import (
 	"log"
 	"net/http"
-	"os"
 
-	"gopkg.in/mgo.v2"
+	"github.com/HouzuoGuo/tiedot/db"
 
 	"github.com/codegangsta/negroni"
 	"github.com/julienschmidt/httprouter"
@@ -24,30 +23,39 @@ func ContentTypeHandler(w http.ResponseWriter, r *http.Request, next http.Handle
 
 func main() {
 
-	database, err := mgo.Dial(os.Getenv("DATABASE_PORT_27017_TCP_ADDR"))
+	databasePath := "/database/jackmarshall"
+	database, err := db.OpenDB(databasePath)
 	if err != nil {
-		log.Fatalln(err)
+		panic(err)
 	}
 	defer database.Close()
 
+	database.Create("Scenario")
+	database.Create("Tournaments")
+	// database, err := mgo.Dial(os.Getenv("DATABASE_PORT_27017_TCP_ADDR"))
+	// if err != nil {
+	// 	log.Fatalln(err)
+	// }
+	// defer database.Close()
+
 	router := httprouter.New()
 	router.GET("/scenario", NewListScenarioHandler(database))
-	router.GET("/scenario/:id", NewGetScenarioHandler(database))
+	// router.GET("/scenario/:id", NewGetScenarioHandler(database))
 	router.POST("/scenario", NewCreateScenarioHandler(database))
-	router.PUT("/scenario/:id", NewUpdateScenarioHandler(database))
-	router.DELETE("/scenario/:id", NewDeleteScenarioHandler(database))
+	// router.PUT("/scenario/:id", NewUpdateScenarioHandler(database))
+	// router.DELETE("/scenario/:id", NewDeleteScenarioHandler(database))
 
-	router.GET("/tables", NewListTableHandler(database))
-
-	router.GET("/players", NewListPlayerHandler(database))
-
-	router.GET("/tournaments/:id/round", NewCreateRoundHandler(database))
-
+	// router.GET("/tables", NewListTableHandler(database))
+	//
+	// router.GET("/players", NewListPlayerHandler(database))
+	//
+	// router.GET("/tournaments/:id/round", NewCreateRoundHandler(database))
+	//
 	router.GET("/tournaments", NewListTournamentHandler(database))
-	router.GET("/tournaments/:id", NewGetTournamentHandler(database))
+	// router.GET("/tournaments/:id", NewGetTournamentHandler(database))
 	router.POST("/tournaments", NewCreateTournamentHandler(database))
-	router.PUT("/tournaments/:id", NewUpdateTournamentHandler(database))
-	router.DELETE("/tournaments/:id", NewDeleteTournamentHandler(database))
+	// router.PUT("/tournaments/:id", NewUpdateTournamentHandler(database))
+	// router.DELETE("/tournaments/:id", NewDeleteTournamentHandler(database))
 
 	// Initialize the middleware stack
 	stack := negroni.New()
@@ -57,5 +65,5 @@ func main() {
 	stack.Use(negroni.HandlerFunc(ContentTypeHandler))
 	stack.UseHandler(router)
 
-	log.Fatalln(http.ListenAndServe(":8080", stack))
+	log.Fatalln(http.ListenAndServe(":8081", stack))
 }

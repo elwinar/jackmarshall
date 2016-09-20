@@ -3,8 +3,8 @@ package main
 type PlayerScoreList []PlayerScore
 
 type PlayerScore struct {
-	Player string `json:"player" bson:"_id"`
-	Score  int    `json:"score" bson:"totalpoints"`
+	Player string `json:"player"`
+	Score  int    `json:"score"`
 }
 
 func (p PlayerScoreList) Len() int           { return len(p) }

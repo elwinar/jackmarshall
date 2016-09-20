@@ -1,10 +1,6 @@
 package main
 
-import (
-	"time"
-
-	"gopkg.in/mgo.v2/bson"
-)
+import "gopkg.in/mgo.v2/bson"
 
 type Tournament struct {
 	ID        bson.ObjectId `json:"id" bson:"_id,omitempty"`
@@ -13,10 +9,10 @@ type Tournament struct {
 	Format    int           `json:"format"`
 	Slots     int           `json:"slots"`
 	FeeAmount float32       `json:"fee_amount"`
-	Date      time.Time     `json:"date"`
-	Players   []Player      `json:"players"`
-	Tables    []Table       `json:"tables"`
-	Rounds    []Round       `json:"rounds"`
+	//	Date      time.Time     `json:"date"`
+	Players []Player `json:"players"`
+	Tables  []Table  `json:"tables"`
+	Rounds  []Round  `json:"rounds"`
 }
 
 func (t Tournament) isPairingOk(player1 string, player2 string) bool {

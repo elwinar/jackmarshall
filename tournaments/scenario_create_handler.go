@@ -4,13 +4,12 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/HouzuoGuo/tiedot/db"
 	"github.com/julienschmidt/httprouter"
-	"gopkg.in/mgo.v2"
 )
 
-func NewCreateScenarioHandler(db *mgo.Session) httprouter.Handle {
-	collection := db.DB("jackmarshall").C("scenario")
-
+func NewCreateScenarioHandler(database *db.DB) httprouter.Handle {
+	collection := database.Use("Scenario")
 	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 		var scenario Scenario
@@ -20,11 +19,20 @@ func NewCreateScenarioHandler(db *mgo.Session) httprouter.Handle {
 			return
 		}
 
-		err = collection.Insert(&scenario)
+		_, err = collection.Insert(map[string]interface{}{
+			"name": scenario.Name,
+			"year": scenario.Year,
+			"link": scenario.Link})
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+
+		// err = collection.Insert(&scenario)
+		// if err != nil {
+		// 	http.Error(w, err.Error(), http.StatusInternalServerError)
+		// 	return
+		// }
 
 		w.WriteHeader(http.StatusOK)
 	}

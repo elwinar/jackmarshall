@@ -3,8 +3,8 @@ package main
 import "fmt"
 
 type Pairing struct {
-	Player1 string `json:"id" bson:"_id,omitempty"`
-	Player2 string `json:"id" bson:"_id,omitempty"`
+	Player1 string `json:"id"`
+	Player2 string `json:"id"`
 }
 
 func CreatePairings(players []string, tournament Tournament) (pairings []Pairing) {
